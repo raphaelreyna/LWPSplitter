@@ -13,7 +13,6 @@ def zeroToMinusOne(x):
 def maxCoeffCodeForDegree(degree):
     return (2 ** (degree + 1)) - 1
 
-
 class Splitter:
     def __init__(
         self, user, password, host="localhost", port="5432", dbname="lwp_roots"
@@ -21,7 +20,7 @@ class Splitter:
         self.loadState()
         self.polysProcessed = 0
         self.finishedDegree = False
-        self.db = DataBase.DataBase(user, password, host=host, port=port, dbname=dbname)
+        self.db = DataBase.DataBaseSetter(user, password, host=host, port=port, dbname=dbname)
         self.db.connect()
         self.db.createTables()
 

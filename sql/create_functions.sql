@@ -1,0 +1,1 @@
+DECLARE maxDegree BIGINT; BEGIN SELECT max(degree) FROM polynomial INTO maxDegree; RETURN maxDegree; END; DECLARE maxCode BIGINT; BEGIN SELECT max(code) FROM polynomial WHERE degree=(SELECT getMaxDegree()) INTO maxCode; RETURN maxCode; END;
