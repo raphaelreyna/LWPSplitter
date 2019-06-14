@@ -17,31 +17,13 @@ class Splitter:
     def __init__(
         self, user, password, host="localhost", port="5432", dbname="lwp_roots"
     ):
-        self.loadState()
-        self.polysProcessed = 0
         self.finishedDegree = False
         self.db = DataBase.DataBaseSetter(user, password, host=host, port=port, dbname=dbname)
         self.db.connect()
-        self.db.createTables()
-
-    def loadState(self):
-        stateFileExists = os.path.isfile(
-            "state.json"
-        )  # state.json stores the last worked polynomials code and degree.
-        if stateFileExists == False:
-            state = {"Degree": 1, "CoeffCode": 0}
-            file = open("state.json", "w")
-            json.dump(state, file)
-            file.close()
-        stateFile = open("state.json")
-        self.state = json.load(stateFile)
-        stateFile.close()
-        self.maxCoeffCode = maxCoeffCodeForDegree(self.state["Degree"])
-
-    def flushState(self):
-        stateFile = open("state.json", "w")
-        json.dump(self.state, stateFile)
-        stateFile.close()
+        DataBase.setupDataBase(self.db)
+        self.state = self.db.getState()
+        self.maxCoeffCode = maxCoeffCodeForDegree(self.state['Degree'])
+        self.updateState()
 
     def updateState(self):
         self.state["CoeffCode"] += 1
@@ -78,7 +60,6 @@ class Splitter:
             result = self.db.enterNewPolynomialRoot(rootsData)
             if result is True:
                 self.updateState()
-                self.flushState()
                 polysProcessed += 1
             else:
                 raise Exception("Lost Connection to Database!")

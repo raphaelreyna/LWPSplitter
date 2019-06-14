@@ -37,7 +37,7 @@ class DataBase:
                 degree = self.cursor.fetchall()[0][0]
                 self.cursor.callproc('getMaxCode')
                 code = self.cursor.fetchall()[0][0]
-                return {'CoeffCode': code, 'Degree': degree}
+                return {'Degree': degree, 'CoeffCode': code}
 
 class DataBaseGetter(DataBase):
         def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
