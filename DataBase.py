@@ -75,7 +75,6 @@ class DataBaseGetter(DataBase):
                 query = self.sql['RootsComplexNumbers'].format(**options)
                 return self.getCountAndGenForQuery(query)
 
-
 class DataBaseSetter(DataBase):
         def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
                 DataBase.__init__(self, user, password, host=host, port=port, dbname=dbname)
@@ -143,18 +142,46 @@ class DataBaseSetter(DataBase):
                         raise DataBaseException("Tried to insert a new root but cursor does not exist.")
                 return True
 
-
         def getComplexNumberID(self, r, i):
                 sql = self.getterSQL['complex_number'].format(realPart=r, imaginaryPart=i)
                 self.cursor.execute(sql)
                 return self.cursor.fetchone()[0]
+
+        def polynomialIsComplete(self, id):
+                self.cursor.callproc('polynomialIsComplete',[id])
+                return self.cursor.fetchall()[0][0]
+
+        def degreeOfPolynomial(self, id):
+                self.cursor.callproc('degreeOfPolynomial', [id])
+                return self.cursor.fetchall()[0][0]
+
+        def numberOfRootsLogged(self, id):
+                self.cursor.callproc('numberOfRootsLogged', [id])
+                return self.cursor.fetchall()[0][0]
+
+        def polynomialIsComplete(self, id):
+                self.cursor.callproc('polynomialIsComplete', [id])
+                return self.cursor.fetchall()[0][0]
+
+        def globalMultiplicityOfRoot(self, id):
+                self.cursor.callproc('globalMultiplicityOf', [id])
+                return self.cursor.fetchall()[0][0]
+
+        def globalPolynomialCountOfRoot(self, id):
+                self.cursor.callproc('globalPolynomialCountOf', [id])
+                return self.cursor.fetchall()[0][0]
+
+        def purgePolynomial(self, id):
+                self.cursor.callproc('purgePolynomial', [id])
+                self.cursor.fetchall()
+                return None
 
 def setupDataBase(database):
         dbWasConnected = True
         if database.cursor is None:
                 database.connect()
                 dbWasConnected = False
-        cursor = database.cursor()
+        cursor = database.cursor
         sqlSource = open("sql/create_tables.sql").read().rstrip("\n")
         try:
                 cursor.execute(sqlSource)
