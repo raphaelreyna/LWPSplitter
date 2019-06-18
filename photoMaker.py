@@ -1,5 +1,6 @@
-import os, json
 from PIL import Image, ImageDraw
+from DataBase import DataBaseGetter
+
 
 def getDirectory():
     stateFile = open('state.json', 'r')
