@@ -182,7 +182,7 @@ def setupDataBase(database):
                 database.connect()
                 dbWasConnected = False
         cursor = database.cursor
-        sqlSourceFile = open("sql/create_tables.sql").read().rstrip("\n")
+        sqlSourceFile = open("sql/create_tables.sql")
         sqlSource = sqlSourceFile.read().rstrip("\n")
         try:
                 cursor.execute(sqlSource)
