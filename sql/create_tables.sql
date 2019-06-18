@@ -17,5 +17,5 @@ CREATE TABLE root (
        polynomial_id BIGINT NOT NULL,
        complex_number_id BIGINT NOT NULL,
        multiplicity SMALLINT NOT NULL,
-       UNIQUE(polynomial_id, complex_numbe r_id)
+       UNIQUE(polynomial_id, complex_number_id)
 );
