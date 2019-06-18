@@ -182,19 +182,20 @@ def setupDataBase(database):
                 database.connect()
                 dbWasConnected = False
         cursor = database.cursor
-        sqlSource = open("sql/create_tables.sql").read().rstrip("\n")
+        sqlSourceFile = open("sql/create_tables.sql").read().rstrip("\n")
+        sqlSource = sqlSourceFile.read().rstrip("\n")
         try:
                 cursor.execute(sqlSource)
         except psycopg2.errors.DuplicateTable:
-                sqlSource.close()
+                sqlSourceFile.close()
                 return
         else:
-                sqlSource.close()
+                sqlSourceFile.close()
         sqlSource = open("sql/create_functions.sql").read().rstrip("\n")
         try:
                 cursor.execute(sqlSource)
         except:
-                sqlSource.close()
+                sqlSourceFile.close()
                 raise
         else:
                 sqlSource.close()
