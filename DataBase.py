@@ -1,4 +1,5 @@
-from math import ceil
+from math import ceil, sin, cos
+from random import uniform
 import psycopg2
 import collections
 
@@ -33,9 +34,9 @@ class DataBase:
                 self.connection = None
 
         def getState(self):
-                self.cursor.callproc('getMaxDegree')
+                self.cursor.callproc('maxDegree')
                 degree = self.cursor.fetchall()[0][0]
-                self.cursor.callproc('getMaxCode')
+                self.cursor.callproc('maxCode')
                 code = self.cursor.fetchall()[0][0]
                 return {'Degree': degree, 'CoeffCode': code}
 
@@ -88,6 +89,9 @@ class DataBaseSetter(DataBase):
                 srcFile.close()
                 srcFile = open("sql/enter_complex_number.sql")
                 self.insertSQL['complex_number'] = srcFile.read().rstrip('\n')
+                srcFile.close()
+                srcFile = open("sql/enter_random_complex_number.sql")
+                self.insertSQL['random'] = srcFile.read().rstrip('\n')
                 srcFile.close()
                 srcFile = open("sql/enter_root.sql")
                 self.insertSQL['root'] = srcFile.read().rstrip('\n')
@@ -142,6 +146,18 @@ class DataBaseSetter(DataBase):
                         raise DataBaseException("Tried to insert a new root but cursor does not exist.")
                 return True
 
+        def enterNewRandomRoot(self):
+                if self.cursor is not None:
+                        r = uniform(0.5, 2)
+                        theta = uniform(0, 6.2831)
+                        real_part = r*cos(theta)
+                        imaginary_part = r*sin(theta)
+                        sql = self.insertSQL['random'].format(real_part=real_part, imaginary_part=imaginary_part)
+                        try:
+                                self.cursor.execute(sql)
+                        except psycopg2.errors.UniqueViolation:
+                                self.enterNewRandomRoot()
+
         def getComplexNumberID(self, r, i):
                 sql = self.getterSQL['complex_number'].format(realPart=r, imaginaryPart=i)
                 self.cursor.execute(sql)
@@ -182,23 +198,39 @@ def setupDataBase(database):
                 database.connect()
                 dbWasConnected = False
         cursor = database.cursor
+
         sqlSourceFile = open("sql/create_tables.sql")
         sqlSource = sqlSourceFile.read().rstrip("\n")
         try:
                 cursor.execute(sqlSource)
+                database.commit()
         except psycopg2.errors.DuplicateTable:
                 sqlSourceFile.close()
                 return
         else:
                 sqlSourceFile.close()
-        sqlSource = open("sql/create_functions.sql").read().rstrip("\n")
+
+        sqlSourceFile = open("sql/create_views.sql")
+        sqlSource = sqlSourceFile.read().rstrip("\n")
         try:
                 cursor.execute(sqlSource)
-        except:
+                database.commit()
+        except psycopg2.errors.DuplicateTable:
+                sqlSourceFile.close()
+                return
+        else:
+                sqlSourceFile.close()
+
+        sqlSourceFile = open("sql/create_functions.sql")
+        sqlSource = sqlSourceFile.read().rstrip("\n")
+        try:
+                cursor.execute(sqlSource)
+                database.commit()
+        except psycopg2.errors.DuplicateFunction:
                 sqlSourceFile.close()
                 raise
         else:
-                sqlSource.close()
+                sqlSourceFile.close()
         if dbWasConnected is False:
                 database.disconnect()
 

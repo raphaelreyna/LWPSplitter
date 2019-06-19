@@ -1,0 +1,5 @@
+CREATE OR REPLACE FUNCTION maxCode() RETURNS BIGINT AS $$
+BEGIN
+RETURN (SELECT max(code) FROM polynomials WHERE degree=(SELECT getMaxDegree()));
+END; $$
+LANGUAGE PLPGSQL;
