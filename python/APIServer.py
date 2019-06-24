@@ -13,7 +13,8 @@ dbGetter = DatabaseGetter(username, password)
 dbSetter = DatabaseSetter(username, password)
 dbGetter.connect()
 
-splittingthread = None
+splittingthread = Splitter(dbSetter, 0)
+splittingthread.start()
 
 class Split(Resource):
     def get(self, count):
@@ -22,7 +23,7 @@ class Split(Resource):
             c = int(count)
         except:
             return {"RETURN": -1}
-        if splittingthread is not None and c is not None:
+        if c is not None:
             if splittingthread.is_alive() is True:
                 return {"RETURN": 0}
             else:
@@ -50,4 +51,4 @@ api.add_resource(Split, '/split/<count>')
 api.add_resource(State, '/state')
 
 if __name__ == '__main__':
-    app.run(port='5002')
+    app.run(port='5002', host='0.0.0.0')
