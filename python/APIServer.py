@@ -1,7 +1,7 @@
 import threading
 from Splitter import Splitter
 from Database import DatabaseGetter, DatabaseSetter
-from flask import Flask, request
+from flask import Flask
 from flask_restful import Resource, Api
 
 username = 'littlewood'
@@ -12,7 +12,6 @@ api = Api(app)
 
 dbGetter = DatabaseGetter(username, password)
 dbSetter = DatabaseSetter(username, password)
-dbGetter.connect()
 
 """
 Returns -1 when invalid input is given, 1 while currently splitting, and 0 after starting a splitting thread.
@@ -27,16 +26,17 @@ class Split(Resource):
         if threading.active_count() != 2:
             return {"RETURN": 1}
         else:
-            splittingthread = Splitter(dbSetter, c)
-            splittingthread.start()
+            Splitter(dbSetter, c).start()
             return {"RETURN": 0}
 
 class State(Resource):
     def get(self):
         splitting = "False"
+        dbGetter.connect()
         if threading.active_count() != 2:
                 splitting = "True"
         state = dbGetter.getState()
+        dbGetter.disconnect()
         if state['Degree'] is None:
             state = {'CoeffCode': 0, 'Degree': 1}
         state['splitting'] = splitting

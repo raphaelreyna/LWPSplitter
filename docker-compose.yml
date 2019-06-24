@@ -1,0 +1,38 @@
+version: "3"
+services:
+  splitterDB:
+    build:
+      context: .
+      dockerfile: Database_Dockerfile
+    image: splitter_postgres
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.35"
+      restart_policy:
+        condition: on-failure
+        ports:
+          - "5432:5432"
+    networks:
+      - splitter
+  splitter:
+    build:
+      context: .
+      dockerfile: Splitter_Dockerfile
+    image: splitter
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.35"
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "5002:5002"
+    networks:
+      - splitter
+    depends_on:
+      - splitterDB
+networks:
+  splitter:
