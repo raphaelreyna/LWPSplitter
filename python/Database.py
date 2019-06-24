@@ -48,7 +48,7 @@ class DatabaseGetter(Database):
                 self.transferBlockSize = 50
 
         def getSQLSource(self):
-                srcFile = open("sql/get_roots_complex_numbers.sql")
+                srcFile = open("sql/get/roots_complex_numbers.sql")
                 self.sql['RootsComplexNumbers'] = srcFile.read().rstrip('\n')
                 srcFile.close()
 
