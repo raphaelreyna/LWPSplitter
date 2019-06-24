@@ -3,11 +3,11 @@ from random import uniform
 import psycopg2
 import collections
 
-class DataBaseException(Exception):
+class DatabaseException(Exception):
         def __init__(self, message):
                 super().__init__(message)
 
-class DataBase:
+class Database:
         def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
                 self.connectionInfo = {
                         'host': host,
@@ -40,9 +40,9 @@ class DataBase:
                 code = self.cursor.fetchall()[0][0]
                 return {'Degree': degree, 'CoeffCode': code}
 
-class DataBaseGetter(DataBase):
+class DatabaseGetter(Database):
         def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
-                DataBase.__init__(self, user, password, host=host, port=port, dbname=dbname)
+                Database.__init__(self, user, password, host=host, port=port, dbname=dbname)
                 self.sql = {}
                 self.getSQLSource()
                 self.transferBlockSize = 50
@@ -76,28 +76,31 @@ class DataBaseGetter(DataBase):
                 query = self.sql['RootsComplexNumbers'].format(**options)
                 return self.getCountAndGenForQuery(query)
 
-class DataBaseSetter(DataBase):
+class DatabaseSetter(Database):
         def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
-                DataBase.__init__(self, user, password, host=host, port=port, dbname=dbname)
+                Database.__init__(self, user, password, host=host, port=port, dbname=dbname)
                 self.insertSQL = {}
                 self.getterSQL = {}
                 self.getSQLSource()
 
         def getSQLSource(self):
-                srcFile = open("sql/enter_polynomial.sql")
+                srcFile = open("sql/insert/polynomial.sql")
                 self.insertSQL['polynomial'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/enter_complex_number.sql")
+                srcFile = open("sql/insert/complex_number.sql")
                 self.insertSQL['complex_number'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/enter_random_complex_number.sql")
+                srcFile = open("sql/insert/random_complex_number.sql")
                 self.insertSQL['random'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/enter_root.sql")
+                srcFile = open("sql/insert/root.sql")
                 self.insertSQL['root'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/get_complex_number_id.sql")
-                self.getterSQL['complex_number'] = srcFile.read().rstrip('\n')
+                srcFile = open("sql/get/complex_number_id.sql")
+                self.getterSQL['complex_number_id'] = srcFile.read().rstrip('\n')
+                srcFile.close()
+                srcFile = open("sql/get/roots_complex_numbers.sql")
+                self.getterSQL['roots_complex_number'] = srcFile.read().rstrip('\n')
                 srcFile.close()
 
         def commit(self):
@@ -112,7 +115,7 @@ class DataBaseSetter(DataBase):
                         except psycopg2.errors.UniqueViolation:
                                 return None
                 else:
-                        raise DataBaseException("Tried to insert a new polynomial but cursor does not exist.")
+                        raise DatabaseException("Tried to insert a new polynomial but cursor does not exist.")
                 return None
 
         def enterNewComplexNumber(self, r, i):
@@ -124,7 +127,7 @@ class DataBaseSetter(DataBase):
                         except psycopg2.errors.UniqueViolation:
                                 return self.getComplexNumberID(r, i)
                 else:
-                        raise DataBaseException("Tried to insert a new complex number but cursor does not exist.")
+                        raise DatabaseException("Tried to insert a new complex number but cursor does not exist.")
                 return None
 
         def enterNewPolynomialRoot(self, polynomial):
@@ -143,7 +146,7 @@ class DataBaseSetter(DataBase):
                                                 print("This should not have happened. Terminating. \n")
                                                 raise
                 else:
-                        raise DataBaseException("Tried to insert a new root but cursor does not exist.")
+                        raise DatabaseException("Tried to insert a new root but cursor does not exist.")
                 return True
 
         def enterNewRandomRoot(self):
@@ -159,7 +162,7 @@ class DataBaseSetter(DataBase):
                                 self.enterNewRandomRoot()
 
         def getComplexNumberID(self, r, i):
-                sql = self.getterSQL['complex_number'].format(realPart=r, imaginaryPart=i)
+                sql = self.getterSQL['complex_number_id'].format(realPart=r, imaginaryPart=i)
                 self.cursor.execute(sql)
                 return self.cursor.fetchone()[0]
 
@@ -191,47 +194,4 @@ class DataBaseSetter(DataBase):
                 self.cursor.callproc('purgePolynomial', [id])
                 self.cursor.fetchall()
                 return None
-
-def setupDataBase(database):
-        dbWasConnected = True
-        if database.cursor is None:
-                database.connect()
-                dbWasConnected = False
-        cursor = database.cursor
-
-        sqlSourceFile = open("sql/create_tables.sql")
-        sqlSource = sqlSourceFile.read().rstrip("\n")
-        try:
-                cursor.execute(sqlSource)
-                database.commit()
-        except psycopg2.errors.DuplicateTable:
-                sqlSourceFile.close()
-                return
-        else:
-                sqlSourceFile.close()
-
-        sqlSourceFile = open("sql/create_views.sql")
-        sqlSource = sqlSourceFile.read().rstrip("\n")
-        try:
-                cursor.execute(sqlSource)
-                database.commit()
-        except psycopg2.errors.DuplicateTable:
-                sqlSourceFile.close()
-                return
-        else:
-                sqlSourceFile.close()
-
-        sqlSourceFile = open("sql/create_functions.sql")
-        sqlSource = sqlSourceFile.read().rstrip("\n")
-        try:
-                cursor.execute(sqlSource)
-                database.commit()
-        except psycopg2.errors.DuplicateFunction:
-                sqlSourceFile.close()
-                raise
-        else:
-                sqlSourceFile.close()
-        if dbWasConnected is False:
-                database.disconnect()
-
 

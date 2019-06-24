@@ -1,5 +1,5 @@
 import numpy as np
-import DataBase
+import Database
 
 def zeroToMinusOne(x):
     if x == 0:
@@ -12,13 +12,15 @@ def maxCoeffCodeForDegree(degree):
 
 class Splitter:
     def __init__(
-        self, user, password, host="localhost", port="5432", dbname="lwp_roots"
+        self, user, password, host="splitterDB", port="5432", dbname="lwp_roots"
     ):
         self.finishedDegree = False
-        self.db = DataBase.DataBaseSetter(user, password, host=host, port=port, dbname=dbname)
+        self.db = Database.DatabaseSetter(user, password, host=host, port=port, dbname=dbname)
         self.db.connect()
-        DataBase.setupDataBase(self.db)
-        self.state = self.db.getState()
+        try:
+            self.state = self.db.getState()
+        except:
+            self.state = {'CoeffCode': 0, 'Degree': 1}
         self.maxCoeffCode = maxCoeffCodeForDegree(self.state['Degree'])
         self.updateState()
 

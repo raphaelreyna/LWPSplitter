@@ -6,7 +6,7 @@ function execute_all_sql {
 	done
 }
 
-cd funcs && execute_all_sql
+cd functions && execute_all_sql
 cd ./admin && execute_all_sql
 cd ../../tables && execute_all_sql
 cd ../views && execute_all_sql

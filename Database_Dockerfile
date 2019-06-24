@@ -1,13 +1,10 @@
 FROM ubuntu:16.04
 
 # Add repo for postgres, then download and install postgres
-RUN apt update && apt install -y gnupg2 &&\
-    apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 &&\
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list &&\
-    apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+RUN apt update && apt install -y postgresql-9.5
 
 # Copy over sql files to setup database
-COPY ./setup/ /setup/
+COPY ./sql/setup/ /setup/
 # Give ownership pf files to postgres
 RUN chown -R postgres /setup
 
@@ -23,12 +20,12 @@ RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER littlewood WITH SUPERUSER PASSWORD 'JohnEdenson';" &&\
     createdb -O littlewood lwp_roots && ./setup.sh
 # Accept all incoming connections
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf &&\
-    echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf &&\
+    echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
 
 # Expose port 5432
 EXPOSE 5432
 # Create managed volumes to store data, logs and settings
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 # Command to run once container starts
-CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
+CMD ["/usr/lib/postgresql/9.5/bin/postgres", "-D", "/var/lib/postgresql/9.5/main", "-c", "config_file=/etc/postgresql/9.5/main/postgresql.conf"]
