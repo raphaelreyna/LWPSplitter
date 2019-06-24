@@ -1,5 +1,7 @@
 FROM python:3
-WORKDIR /usr/src/Splitter
+WORKDIR /usr/src/Splitter/python
 COPY python/ .
+COPY sql/insert/ ../sql/insert/
+COPY sql/get/ ../sql/get/
 RUN pip install --no-cache-dir -r requirements.txt
-CMD ["python", "./main.py"]
+CMD ["python", "./APIServer.py"]
