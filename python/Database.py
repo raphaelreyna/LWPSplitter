@@ -8,7 +8,7 @@ class DatabaseException(Exception):
                 super().__init__(message)
 
 class Database:
-        def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
+        def __init__(self, user, password, host='splitterDB', port='5432', dbname='lwp_roots'):
                 self.connectionInfo = {
                         'host': host,
                         'port': port,
@@ -41,7 +41,7 @@ class Database:
                 return {'Degree': degree, 'CoeffCode': code}
 
 class DatabaseGetter(Database):
-        def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
+        def __init__(self, user, password, host='splitterDB', port='5432', dbname='lwp_roots'):
                 Database.__init__(self, user, password, host=host, port=port, dbname=dbname)
                 self.sql = {}
                 self.getSQLSource()
@@ -77,7 +77,7 @@ class DatabaseGetter(Database):
                 return self.getCountAndGenForQuery(query)
 
 class DatabaseSetter(Database):
-        def __init__(self, user, password, host='localhost', port='5432', dbname='lwp_roots'):
+        def __init__(self, user, password, host='splitterDB', port='5432', dbname='lwp_roots'):
                 Database.__init__(self, user, password, host=host, port=port, dbname=dbname)
                 self.insertSQL = {}
                 self.getterSQL = {}
@@ -194,4 +194,3 @@ class DatabaseSetter(Database):
                 self.cursor.callproc('purgePolynomial', [id])
                 self.cursor.fetchall()
                 return None
-
