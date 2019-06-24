@@ -17,9 +17,8 @@ class Splitter:
         self.finishedDegree = False
         self.db = Database.DatabaseSetter(user, password, host=host, port=port, dbname=dbname)
         self.db.connect()
-        try:
-            self.state = self.db.getState()
-        except:
+        self.state = self.db.getState()
+        if self.state['Degree'] is None:
             self.state = {'CoeffCode': 0, 'Degree': 1}
         self.maxCoeffCode = maxCoeffCodeForDegree(self.state['Degree'])
         self.updateState()
