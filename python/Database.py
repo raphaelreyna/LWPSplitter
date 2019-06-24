@@ -48,7 +48,7 @@ class DatabaseGetter(Database):
                 self.transferBlockSize = 50
 
         def getSQLSource(self):
-                srcFile = open("sql/get/roots_complex_numbers.sql")
+                srcFile = open("../sql/get/roots_complex_numbers.sql")
                 self.sql['RootsComplexNumbers'] = srcFile.read().rstrip('\n')
                 srcFile.close()
 
@@ -84,22 +84,22 @@ class DatabaseSetter(Database):
                 self.getSQLSource()
 
         def getSQLSource(self):
-                srcFile = open("sql/insert/polynomial.sql")
+                srcFile = open("../sql/insert/polynomial.sql")
                 self.insertSQL['polynomial'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/insert/complex_number.sql")
+                srcFile = open("../sql/insert/complex_number.sql")
                 self.insertSQL['complex_number'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/insert/random_complex_number.sql")
+                srcFile = open("../sql/insert/random_complex_number.sql")
                 self.insertSQL['random'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/insert/root.sql")
+                srcFile = open("../sql/insert/root.sql")
                 self.insertSQL['root'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/get/complex_number_id.sql")
+                srcFile = open("../sql/get/complex_number_id.sql")
                 self.getterSQL['complex_number_id'] = srcFile.read().rstrip('\n')
                 srcFile.close()
-                srcFile = open("sql/get/roots_complex_numbers.sql")
+                srcFile = open("../sql/get/roots_complex_numbers.sql")
                 self.getterSQL['roots_complex_number'] = srcFile.read().rstrip('\n')
                 srcFile.close()
 
