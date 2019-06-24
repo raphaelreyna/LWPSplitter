@@ -19,7 +19,7 @@ class Splitter(threading.Thread):
         self.db.connect()
         self.state = self.db.getState()
         if self.state['Degree'] is None:
-            self.state = {'CoeffCode': 0, 'Degree': 1}
+            self.state = {'CoeffCode': -1, 'Degree': 1}
         self.maxCoeffCode = maxCoeffCodeForDegree(self.state['Degree'])
         self.updateState()
         self.count = splitCount

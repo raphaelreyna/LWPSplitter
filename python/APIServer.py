@@ -15,7 +15,7 @@ dbSetter = DatabaseSetter(username, password)
 dbGetter.connect()
 
 """
-Returns -1 when invalid input is given, 0 while currently splitting, and 1 after starting a splitting thread.
+Returns -1 when invalid input is given, 1 while currently splitting, and 0 after starting a splitting thread.
 """
 class Split(Resource):
     def get(self, count):
@@ -24,23 +24,17 @@ class Split(Resource):
             c = int(count)
         except:
             return {"RETURN": -1}
-        if c is not None:
-            if threading.active_count() != 2:
-                return {"RETURN": 0}
-            else:
-                splittingthread = Splitter(dbSetter, c)
-                splittingthread.start()
-                return {"RETURN": 1}
+        if threading.active_count() != 2:
+            return {"RETURN": 1}
         else:
-                splittingthread = Splitter(dbSetter, c)
-                splittingthread.start()
-                return {"RETURN": 1}
+            splittingthread = Splitter(dbSetter, c)
+            splittingthread.start()
+            return {"RETURN": 0}
 
 class State(Resource):
     def get(self):
         splitting = "False"
-        if splittingthread is not None:
-            if splittingthread.is_alive() is True:
+        if threading.active_count() != 2:
                 splitting = "True"
         state = dbGetter.getState()
         if state['Degree'] is None:
