@@ -12,8 +12,12 @@ services:
           cpus: "0.35"
       restart_policy:
         condition: on-failure
-        ports:
-          - "5432:5432"
+    volumes:
+      - data-volume:/var/lib/postgresql
+      - log-volume:/var/log/postgresql
+      - conf-volume:/etc/postgresql
+    ports:
+      - "5432:5432"
     networks:
       - splitter
   splitter:
@@ -36,3 +40,7 @@ services:
       - splitterDB
 networks:
   splitter:
+volumes:
+  data-volume:
+  log-volume:
+  conf-volume:
