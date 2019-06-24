@@ -1,3 +1,4 @@
+import threading
 from Splitter import Splitter
 from Database import DatabaseGetter, DatabaseSetter
 from flask import Flask, request
@@ -13,9 +14,9 @@ dbGetter = DatabaseGetter(username, password)
 dbSetter = DatabaseSetter(username, password)
 dbGetter.connect()
 
-splittingthread = Splitter(dbSetter, 0)
-splittingthread.start()
-
+"""
+Returns -1 when invalid input is given, 0 while currently splitting, and 1 after starting a splitting thread.
+"""
 class Split(Resource):
     def get(self, count):
         c = None
@@ -24,7 +25,7 @@ class Split(Resource):
         except:
             return {"RETURN": -1}
         if c is not None:
-            if splittingthread.is_alive() is True:
+            if threading.active_count() != 2:
                 return {"RETURN": 0}
             else:
                 splittingthread = Splitter(dbSetter, c)

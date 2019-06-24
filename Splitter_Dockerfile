@@ -1,8 +1,9 @@
 FROM python:3
 WORKDIR /usr/src/Splitter/python
+COPY python/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY python/ .
 COPY sql/insert/ ../sql/insert/
 COPY sql/get/ ../sql/get/
-RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5002
 CMD ["python", "./APIServer.py"]
