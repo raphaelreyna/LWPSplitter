@@ -1,0 +1,29 @@
+FROM ubuntu:16.04
+
+# Add repo for postgres, then download and install postgres
+RUN apt update && apt install -y postgresql-9.5
+
+# Copy over sql files to setup database
+COPY ./sql/setup/ /setup/
+# Give ownership pf files to postgres
+RUN chown -R postgres /setup
+
+# Add Littlewood as a user
+RUN useradd -s /bin/bash -p JohnEdenson littlewood
+
+# Switch to acting as user postgres
+USER postgres
+# Change /setup to be the working directory
+WORKDIR /setup/
+# Start postgres and setup the database.
+RUN /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER littlewood WITH SUPERUSER PASSWORD 'JohnEdenson';" &&\
+    createdb -O littlewood lwp_roots && ./setup.sh
+# Accept all incoming connections
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf &&\
+    echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
+
+# Expose port 5432
+EXPOSE 5432
+# Command to run once container starts
+CMD ["/usr/lib/postgresql/9.5/bin/postgres", "-D", "/var/lib/postgresql/9.5/main", "-c", "config_file=/etc/postgresql/9.5/main/postgresql.conf"]

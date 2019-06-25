@@ -1,0 +1,5 @@
+numpy
+psycopg2-binary
+Pillow
+flask
+flask-restful

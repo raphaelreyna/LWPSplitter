@@ -1,5 +1,5 @@
+import threading
 import numpy as np
-import DataBase
 
 def zeroToMinusOne(x):
     if x == 0:
@@ -10,17 +10,19 @@ def zeroToMinusOne(x):
 def maxCoeffCodeForDegree(degree):
     return (2 ** (degree + 1)) - 1
 
-class Splitter:
-    def __init__(
-        self, user, password, host="localhost", port="5432", dbname="lwp_roots"
-    ):
+class Splitter(threading.Thread):
+    def __init__(self, database, splitCount):
+        threading.Thread.__init__(self)
+        self.threadID = id
         self.finishedDegree = False
-        self.db = DataBase.DataBaseSetter(user, password, host=host, port=port, dbname=dbname)
+        self.db = database
         self.db.connect()
-        DataBase.setupDataBase(self.db)
         self.state = self.db.getState()
+        if self.state['Degree'] is None:
+            self.state = {'CoeffCode': -1, 'Degree': 1}
         self.maxCoeffCode = maxCoeffCodeForDegree(self.state['Degree'])
         self.updateState()
+        self.count = splitCount
 
     def updateState(self):
         self.state["CoeffCode"] += 1
@@ -56,9 +58,9 @@ class Splitter:
         coefficients = [zeroToMinusOne(int(coeff)) for coeff in coefficientsStringArray]
         return np.roots(coefficients)
 
-    def run(self, count):
+    def run(self):
         polysProcessed = 0
-        while polysProcessed < count:
+        while polysProcessed < self.count:
             rootsData = self.splitNext()
             result = self.db.enterNewPolynomialRoot(rootsData)
             if result is True:
@@ -66,3 +68,4 @@ class Splitter:
                 polysProcessed += 1
             else:
                 raise Exception("Lost Connection to Database!")
+        self.db.disconnect()
