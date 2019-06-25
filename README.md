@@ -2,18 +2,11 @@
 Splits an arbitrary amount of Littlewood Polynomials and stores the result in a database.
 
 ## Usage
-Create a Splitter object, giving it a username and password for a PostgreSQL server.
-By default, the Splitter object will try to connect to a database named "lwp_roots" on 127.0.0.1 through port 5432.
-You can pass in a different database, host, or port using the optional arguments for 
+Move into the root directory of the project and run `sudo docker-compose up`.
+Once the containers have started, you can access the database on port 5432 with username 'littlewood' and password 'JohnEdenson'. 
+A RESTful API is available on port 5002 for splitting and getting the state.
 
-```python
-splitter = Splitter.Splitter(username, password, host='127.0.0.1', port='5432', dbname='lwp_roots')
-```
+### Example
+Split the next 30 polynomials: `curl http://127.0.0.1:5002/split/30`
 
-then simply call 
-```python
-splitter.run(n)
-``` 
-to split and record `n` polynomials.
-
-**IMPORTANT** Currently only supports one instance of Splitter writing to the database at a time.
+Get the current state: `curl http://127.0.0.1:5002/state`
