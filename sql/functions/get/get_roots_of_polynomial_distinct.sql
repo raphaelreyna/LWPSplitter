@@ -9,7 +9,7 @@ multiplicity
 FROM
 polynomial_roots
 WHERE
-degree = d AND code = c;
+degree = d AND code = c
 );
 END; $$
 LANGUAGE PLPGSQL;
