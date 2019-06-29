@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION get_roots_of_polynomial_distinct(d INTEGER, c BIGINT) RETURNS BIGINT AS
 $$
-BEGIN 
+BEGIN
 RETURN (
        SELECT
         real_part,
@@ -9,7 +9,7 @@ RETURN (
        FROM
         polynomial_roots
        WHERE
-        degree = d AND code = c;
+        degree = d AND code = c
        );
 END; $$
 LANGUAGE PLPGSQL;
