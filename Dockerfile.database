@@ -4,7 +4,7 @@ FROM ubuntu:16.04
 RUN apt update && apt install -y postgresql-9.5
 
 # Copy over sql files to setup database
-COPY ./sql/setup/ /setup/
+COPY ./sql/ /setup/
 # Give ownership pf files to postgres
 RUN chown -R postgres /setup
 
@@ -18,7 +18,7 @@ WORKDIR /setup/
 # Start postgres and setup the database.
 RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER littlewood WITH SUPERUSER PASSWORD 'JohnEdenson';" &&\
-    createdb -O littlewood lwp_roots && ./setup.sh
+    createdb -O littlewood lwp_roots && ./setup_database.sh
 # Accept all incoming connections
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf &&\
     echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf

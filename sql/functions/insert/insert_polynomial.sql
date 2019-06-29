@@ -1,0 +1,12 @@
+CREATE OR REPLACE FUNCTION insert_polynomial(d INTEGER, c BIGINT) RETURNS
+BIGINT AS
+$$
+BEGIN
+INSERT INTO
+  polynomials (degree, code)
+VALUES
+  (d, c)
+RETURNING
+  id;
+END; $$
+LANGUAGE PLPGSQL;

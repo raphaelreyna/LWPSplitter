@@ -1,11 +1,11 @@
 CREATE VIEW polynomial_roots AS
 SELECT
-  r.id,
-  p.degree,
-  p.code,
-  c.real_part,
-  c.imaginary_part,
-  r.multiplicity
+  r.id id,
+  p.degree degree,
+  p.code code,
+  c.real_part real_part,
+  c.imaginary_part imaginary_part,
+  r.multiplicity multiplicity
 FROM
   roots r
 JOIN
