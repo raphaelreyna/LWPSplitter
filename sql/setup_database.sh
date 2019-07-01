@@ -6,9 +6,9 @@ function execute_all_sql {
 	done
 }
 
-cd ../../tables && execute_all_sql
+cd ./tables && execute_all_sql
 cd ../views && execute_all_sql
-cd ./functions/admin && execute_all_sql
+cd ../functions/admin && execute_all_sql
 cd ../get && execute_all_sql
 cd ../insert && execute_all_sql
 cd ../state
