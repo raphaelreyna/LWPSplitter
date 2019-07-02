@@ -1,8 +1,7 @@
-import threading
-from Splitter import Splitter
-from Database import DatabaseGetter, DatabaseSetter
-from flask import Flask
-from flask_restful import Resource, Api
+from ImageMaker import ImageMaker
+from flask import Flask, send_file
+from flask_restful import Resource, Api, request
+import os, sys
 
 username = 'littlewood'
 password = 'JohnEdenson'
@@ -10,40 +9,50 @@ password = 'JohnEdenson'
 app = Flask(__name__)
 api = Api(app)
 
-dbGetter = DatabaseGetter(username, password)
-dbSetter = DatabaseSetter(username, password)
+imagemaker = ImageMaker(username, password, host='kes.local')
+oldImagePath = None
 
 """
 Returns -1 when invalid input is given, 1 while currently splitting, and 0 after starting a splitting thread.
 """
-class Split(Resource):
-    def get(self, count):
-        c = None
+class imageForDegEq(Resource):
+    def get(self, degree):
+        d = None
         try:
-            c = int(count)
+            d = int(degree)
         except:
             return {"RETURN": -1}
-        if threading.active_count() != 2:
-            return {"RETURN": 1}
-        else:
-            Splitter(dbSetter, c).start()
-            return {"RETURN": 0}
+        im = imagemaker.makeImageForDegree(d)
+        path = sys.path[-1]+"/ImageMaker/tmp/"
+        name = "lwp_roots_degree_"+str(d)+".png"
+        path += name
+        try:
+            os.remove(oldImagePath)
+        except:
+            pass
+        im.save(path, 'png')
+        oldImagePath = path
+        return send_file(path)
 
-class State(Resource):
+class imageForQuery(Resource):
     def get(self):
-        splitting = "False"
-        dbGetter.connect()
-        if threading.active_count() != 2:
-                splitting = "True"
-        state = dbGetter.getState()
-        dbGetter.disconnect()
-        if state['Degree'] is None:
-            state = {'CoeffCode': 0, 'Degree': 1}
-        state['splitting'] = splitting
-        return state
+        args = request.args
+        sql = args['sql']
+        size = int(args['size'])
+        im = imagemaker.makeImageForQuery(sql, size=size)
+        path = sys.path[-1]+"/ImageMaker/tmp/"
+        name = "lwp_roots_query.png"
+        path += name
+        try:
+            os.remove(oldImagePath)
+        except:
+            pass
+        im.save(path, 'png')
+        oldImagePath = path
+        return send_file(path)
 
-api.add_resource(Split, '/split/<count>')
-api.add_resource(State, '/state')
+api.add_resource(imageForDegEq, '/imageForDegEq/<degree>')
+api.add_resource(imageForQuery, '/imageForQuery')
 
 if __name__ == '__main__':
     app.run(port='5002', host='0.0.0.0')

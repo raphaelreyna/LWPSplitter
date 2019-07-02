@@ -1,4 +1,5 @@
 from Database.Database import Database as DB
+from math import ceil
 
 class DatabaseGetter(DB):
     def __init__(self,
