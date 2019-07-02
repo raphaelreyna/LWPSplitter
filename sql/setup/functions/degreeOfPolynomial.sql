@@ -1,5 +1,0 @@
-CREATE OR REPLACE FUNCTION degreeOfPolynomial(poly_id BIGINT) RETURNS INTEGER AS $$
-BEGIN
-RETURN (SELECT degree FROM polynomials WHERE id = poly_id);
-END; $$
-LANGUAGE PLPGSQL;

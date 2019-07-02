@@ -3,7 +3,7 @@ services:
   splitterDB:
     build:
       context: .
-      dockerfile: Database_Dockerfile
+      dockerfile: Dockerfile.database
     image: splitter_postgres
     deploy:
       replicas: 1
@@ -23,7 +23,7 @@ services:
   splitter:
     build:
       context: .
-      dockerfile: Splitter_Dockerfile
+      dockerfile: Dockerfile.splitter
     image: splitter
     deploy:
       replicas: 1
@@ -34,6 +34,17 @@ services:
         condition: on-failure
     ports:
       - "5002:5002"
+    networks:
+      - splitter
+    depends_on:
+      - splitterDB
+  imager:
+    build:
+      context: .
+      dockerfile: Dockerfile.imagemaker
+    image: splitter_imagemaker
+    ports:
+      - "5003:5003"
     networks:
       - splitter
     depends_on:

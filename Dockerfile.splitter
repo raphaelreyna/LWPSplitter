@@ -1,0 +1,10 @@
+FROM python:3.5
+ARG testing=no
+WORKDIR /usr/src/Splitter/python
+COPY python/requirements.txt .
+RUN if [ $testing = "yes" ]; then echo "pytest" >> requirements.txt; fi 
+RUN pip install --no-cache-dir -r requirements.txt
+COPY python/ .
+RUN pip install --no-cache-dir .
+EXPOSE 5002
+CMD ["python", "./Splitter/APIServer.py"]
