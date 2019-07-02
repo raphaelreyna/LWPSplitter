@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw
 from Database.Getter import DatabaseGetter
 
 class ImageMaker:
-    def __init__(self, user, password, host="localhost", port="5432", dbname="lwp_roots"):
+    def __init__(self, user, password, host="splitterDB", port="5432", dbname="lwp_roots"):
         self.db = DatabaseGetter(user, password, host=host, port=port, dbname=dbname)
         self.db.connect()
 

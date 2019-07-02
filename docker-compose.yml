@@ -38,6 +38,17 @@ services:
       - splitter
     depends_on:
       - splitterDB
+  imager:
+    build:
+      context: .
+      dockerfile: Dockerfile.imagemaker
+    image: splitter_imagemaker
+    ports:
+      - "5003:5003"
+    networks:
+      - splitter
+    depends_on:
+      - splitterDB
 networks:
   splitter:
 volumes:

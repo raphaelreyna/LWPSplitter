@@ -9,7 +9,7 @@ password = 'JohnEdenson'
 app = Flask(__name__)
 api = Api(app)
 
-imagemaker = ImageMaker(username, password, host='kes.local')
+imagemaker = ImageMaker(username, password)
 oldImagePath = None
 
 """
@@ -23,7 +23,7 @@ class imageForDegEq(Resource):
         except:
             return {"RETURN": -1}
         im = imagemaker.makeImageForDegree(d)
-        path = sys.path[-1]+"/ImageMaker/tmp/"
+        path = sys.path[0]+"/tmp/"
         name = "lwp_roots_degree_"+str(d)+".png"
         path += name
         try:
@@ -40,7 +40,7 @@ class imageForQuery(Resource):
         sql = args['sql']
         size = int(args['size'])
         im = imagemaker.makeImageForQuery(sql, size=size)
-        path = sys.path[-1]+"/ImageMaker/tmp/"
+        path = sys.path[0]+"/tmp/"
         name = "lwp_roots_query.png"
         path += name
         try:
@@ -55,4 +55,4 @@ api.add_resource(imageForDegEq, '/imageForDegEq/<degree>')
 api.add_resource(imageForQuery, '/imageForQuery')
 
 if __name__ == '__main__':
-    app.run(port='5002', host='0.0.0.0')
+    app.run(port='5003', host='0.0.0.0')
