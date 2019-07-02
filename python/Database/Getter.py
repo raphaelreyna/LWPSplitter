@@ -7,7 +7,7 @@ class DatabaseGetter(DB):
                  host='splitterDB',
                  port='5432',
                  dbname='lwp_roots',
-                 blackSize=50):
+                 blockSize=50):
         DB.__init__(self,
                           user,
                           password,

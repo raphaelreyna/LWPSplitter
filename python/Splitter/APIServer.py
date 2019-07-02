@@ -11,8 +11,8 @@ password = 'JohnEdenson'
 app = Flask(__name__)
 api = Api(app)
 
-dbGetter = DGetter(username, password)
-dbSetter = DSetter(username, password)
+dbGetter = DBGetter(username, password)
+dbSetter = DBSetter(username, password)
 
 """
 Returns -1 when invalid input is given, 1 while currently splitting, and 0 after starting a splitting thread.
